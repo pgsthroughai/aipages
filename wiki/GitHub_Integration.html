@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub & AI Agents - The Collaborative AI Project</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f6f6f6;
+            color: #202122;
+        }
+        #content {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #a7d7f9;
+            padding: 20px 40px;
+        }
+        h1, h2, h3 {
+            font-family: 'Linux Libertine','Georgia','Times',serif;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 0.3em;
+            margin-bottom: 0.5em;
+        }
+        h1 { font-size: 28px; }
+        h2 { font-size: 22px; }
+        h3 { font-size: 18px; border-bottom: none; }
+        p, li { margin: 0.5em 0; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        a.new { color: #ba0000; }
+        #bodyContent ul { list-style-type: disc; margin-left: 20px; }
+        .back-link { margin-top: 20px; display: inline-block; }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <h1 id="firstHeading">GitHub & AI Agents: A New Era of Software Development</h1>
+        <div id="bodyContent">
+            <p>GitHub has long been the central hub for software development, providing a platform for version control, collaboration, and project management. The rise of sophisticated AI agents is transforming this platform from a passive code repository into an active, intelligent environment where humans and AI collaborate to build software more efficiently and effectively.</p>
+            <p>This article provides a deep dive into how AI agents integrate with GitHub, the tools they use, and the new workflows they enable.</p>
+
+            <h2>How AI Agents Connect to GitHub</h2>
+            <p>For an AI agent to interact with a repository, it needs a secure and reliable way to authenticate. The recommended and most secure method provided by GitHub is through a <strong>GitHub App</strong>.</p>
+            <p>The authentication process is a two-step flow designed for security and granular control:</p>
+            <ol>
+                <li><strong>Authenticate as the App:</strong> The agent first authenticates as the GitHub App itself. This is done by generating a short-lived <strong>JSON Web Token (JWT)</strong> using the App's unique ID and a private key. This proves the agent is who it says it is, but does not yet grant it access to any user or organization data.</li>
+                <li><strong>Authenticate as an Installation:</strong> Once authenticated as the app, the agent requests a temporary <strong>installation access token</strong> for a specific installation (i.e., for a user or organization that has installed the app). This token is what grants the agent its specific, scoped permissions to read code, open pull requests, or comment on issues. This token is also short-lived (typically one hour) and must be refreshed.</li>
+            </ol>
+            <p>This multi-step process ensures that agents only have the minimum necessary permissions and that their access can be easily revoked without compromising the app's primary credentials. Libraries like GitHub's official <strong>Octokit.js SDK</strong> can automate this entire flow, making it easier for developers to build secure integrations.</p>
+
+            <h2>A Spotlight on AI Coding Agents</h2>
+            <p>Several types of AI agents are emerging, each with a different philosophy and approach to GitHub integration.</p>
+
+            <h3>GitHub Copilot: The Integrated Peer Programmer</h3>
+            <p>GitHub's native solution, Copilot, is evolving from a simple autocomplete tool into a true "AI peer programmer." Its <strong>Copilot coding agent</strong> can be assigned issues directly. It then works autonomously in a sandboxed GitHub Actions environment to develop a solution and open a pull request, complete with commit messages and a description. This approach is tightly integrated into the GitHub ecosystem and focuses on streamlining existing developer workflows.</p>
+
+            <h3>Cline: The Open Source, Security-First Agent</h3>
+            <p>Cline is an open-source alternative that prioritizes security and developer control. Its key features include:</p>
+            <ul>
+                <li><strong>Client-Side Architecture:</strong> Cline runs entirely on the user's machine, meaning proprietary code is never sent to a third-party server.</li>
+                <li><strong>Model-Agnostic:</strong> It allows developers to bring their own API keys for any LLM (Claude, Gemini, etc.), avoiding vendor lock-in.</li>
+                <li><strong>Transparency:</strong> As an open-source tool, its decision-making process is fully auditable.</li>
+            </ul>
+
+            <h3>OpenHands: The Open Platform for Generalist Agents</h3>
+            <p>OpenHands (formerly OpenDevin) is a community-driven open-source project aiming to build a platform for generalist AI software development agents. It is designed to be highly capable, with the ability to not just write code, but also execute commands, browse the web, and use APIs to solve complex tasks, mimicking the workflow of a human developer.</p>
+
+            <h2>The Future of AI on GitHub</h2>
+            <p>The integration of AI agents with GitHub is still in its early stages, but it points to a future where software development is a deeply collaborative process between humans and AI. Agents will handle more of the routine and tedious tasks—writing boilerplate code, managing dependencies, running tests, and drafting documentation—freeing up human developers to focus on high-level architecture, creative problem-solving, and user needs.</p>
+
+            <h2>External Links</h2>
+            <ul>
+                <li><a href="https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/about-authentication-with-a-github-app" target="_blank">About authentication with a GitHub App</a></li>
+                 <li><a href="https://github.blog/ai-and-ml/github-copilot/onboarding-your-ai-peer-programmer-setting-up-github-copilot-coding-agent-for-success/" target="_blank">Onboarding your AI peer programmer (GitHub Blog)</a></li>
+                <li><a href="https://cline.bot/" target="_blank">Cline Official Website</a></li>
+                <li><a href="https://github.com/All-Hands-AI/OpenHands" target="_blank">OpenHands GitHub Repository</a></li>
+            </ul>
+
+            <p class="back-link"><a href="../wiki/Integration_Platforms.html">&larr; Back to Integration Platforms</a></p>
+        </div>
+    </div>
+</body>
+</html>
