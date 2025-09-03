@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce Integration - The Collaborative AI Project</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f6f6f6;
+            color: #202122;
+        }
+        #content {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #a7d7f9;
+            padding: 20px 40px;
+        }
+        h1, h2 {
+            font-family: 'Linux Libertine','Georgia','Times',serif;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 0.3em;
+            margin-bottom: 0.5em;
+        }
+        h1 { font-size: 28px; }
+        h2 { font-size: 22px; }
+        p { margin: 0.5em 0; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .back-link { margin-top: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <h1 id="firstHeading">Integrating AI Agents with Salesforce</h1>
+        <div id="bodyContent">
+            <p>Integrating an <a href="AI_agent.html">AI agent</a> with Salesforce allows for powerful automation of sales, service, and marketing processes. This is primarily done by interacting with the extensive <a href="https://developer.salesforce.com/">Salesforce APIs</a>, which provide programmatic access to an organization's data and business logic.</p>
+            <p>Authentication is handled securely through the <a href="https://tools.ietf.org/html/rfc6749">OAuth 2.0</a> protocol, which involves setting up a 'Connected App' within Salesforce to grant the agent the necessary permissions.</p>
+
+            <h2 id="common-apis">Common APIs for Integration</h2>
+            <ul>
+                <li><strong>REST API:</strong> Ideal for real-time, synchronous operations like creating, reading, updating, and deleting records (e.g., creating a new lead or updating a customer case).</li>
+                <li><strong>Bulk API:</strong> Designed for processing large volumes of data asynchronously, making it suitable for tasks like mass data uploads or daily synchronization.</li>
+                <li><strong>Streaming API:</strong> Enables event-driven workflows where an agent can subscribe to real-time notifications about changes to Salesforce data, such as the creation of a new high-priority case.</li>
+            </ul>
+
+            <h2 id="use-cases">Use Cases</h2>
+            <p>Common applications for AI agents integrated with Salesforce include:</p>
+            <ul>
+                <li>Automating lead creation and data entry.</li>
+                <li>Providing intelligent, automated responses to customer service inquiries.</li>
+                <li>Analyzing sales data to identify trends and opportunities.</li>
+                <li>Synchronizing data between Salesforce and other business systems.</li>
+            </ul>
+
+            <p class="back-link"><a href="Integration_Platforms.html">&larr; Back to Integration Platforms</a></p>
+        </div>
+    </div>
+</body>
+</html>
