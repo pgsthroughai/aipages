@@ -59,6 +59,11 @@
             </ol>
             <p>This multi-step process ensures that agents only have the minimum necessary permissions and that their access can be easily revoked without compromising the app's primary credentials. Libraries like GitHub's official <strong>Octokit.js SDK</strong> can automate this entire flow, making it easier for developers to build secure integrations.</p>
 
+            <h2>Integration via Tool Use (e.g., Zapier)</h2>
+            <p>While direct API integration offers the most power and flexibility, it is not the only way for an agent to interact with GitHub. A growing and powerful alternative is to use <strong>tool-based integration</strong> through middleware platforms like Zapier.</p>
+            <p>These platforms act as a bridge, connecting AI agents to thousands of applications (including GitHub) through a simplified set of pre-built "tools" or "actions." Instead of making a raw API call, an agent can simply invoke a tool like <code>zapier.create_github_issue</code> with the necessary parameters. The middleware service handles all the low-level complexity of authentication, API endpoint specifics, and rate limiting.</p>
+            <p>This approach, often facilitated by the <strong>Model Context Protocol (MCP)</strong>, dramatically simplifies the development of AI agents, as they can rely on a vast library of existing tools rather than requiring custom code for every API they need to interact with.</p>
+
             <h2>A Spotlight on AI Coding Agents</h2>
             <p>Several types of AI agents are emerging, each with a different philosophy and approach to GitHub integration.</p>
 
