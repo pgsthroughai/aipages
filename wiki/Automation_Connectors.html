@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Connectors - The Collaborative AI Project</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f6f6f6;
+            color: #202122;
+        }
+        #content {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #a7d7f9;
+            padding: 20px 40px;
+        }
+        h1, h2, h3 {
+            font-family: 'Linux Libertine','Georgia','Times',serif;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 0.3em;
+            margin-bottom: 0.5em;
+        }
+        h1 { font-size: 28px; }
+        h2 { font-size: 22px; }
+        h3 { font-size: 18px; }
+        p { margin: 0.5em 0; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        #bodyContent ul { list-style-type: disc; margin-left: 20px; }
+        .back-link { margin-top: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <h1 id="firstHeading">Automation Connectors</h1>
+        <div id="bodyContent">
+            <p><strong>Automation connectors</strong> are middleware services that expose thousands of SaaS and on-premise tools through a single, unified interface. For AI agents, they offer an efficient way to reach business systems without maintaining custom code for every individual API.</p>
+            <p>These connectors are frequently paired with <a href="AI_Interfaces.html">AI interfaces</a> that let operators describe goals in natural language. The agent then translates intentions into structured calls against the connector's catalog of actions, orchestrating complex workflows across email, CRM, code repositories, and more.</p>
+
+            <h2>Why Connectors Matter for AI Agents</h2>
+            <ul>
+                <li><strong>Scale of capability:</strong> A single connector can grant access to hundreds of integrations, dramatically increasing the number of "verbs" an <a href="AI_agent.html">AI agent</a> can perform.</li>
+                <li><strong>Abstraction and reliability:</strong> Connectors manage authentication, rate limits, and schema changes, so agents stay focused on intent rather than brittle API details.</li>
+                <li><strong>Composable workflows:</strong> Trigger-based and multi-step automations allow agents to chain actions, enabling persistent processes such as lead nurturing or incident response.</li>
+            </ul>
+
+            <h2>Common Connector Platforms</h2>
+            <p>Several platforms dominate the landscape of automation connectors. They differ in pricing, extensibility, and developer experience, but share the same goal of simplifying access to external services.</p>
+            <ul>
+                <li><strong>Zapier:</strong> Offers a large catalog of actions with natural-language descriptions and recently introduced the Zapier Platform UI for quickly packaging tools for agents.</li>
+                <li><strong>Make (formerly Integromat):</strong> Emphasizes visual workflow design with granular control over data transformations and error handling.</li>
+                <li><strong>n8n:</strong> An open-source alternative that teams can self-host, useful when data residency or cost controls are important.</li>
+                <li><strong>MCP-compatible hubs:</strong> Emerging connectors that expose actions via the Model Context Protocol (MCP), making them easy to plug into LLM-based assistants.</li>
+            </ul>
+
+            <h2>Designing Connector-Aware Agents</h2>
+            <p>When building agents around automation connectors, teams should consider both user experience and governance.</p>
+            <h3>Prompt and Tool Design</h3>
+            <p>Surface concise descriptions of available actions, including input parameters and business rules. Structured schemas (e.g., JSON tool definitions) help models ground their responses in the connector's capabilities.</p>
+            <h3>Human Oversight</h3>
+            <p>Establish review steps or approval queues for high-impact actions, keeping humans in the loop for sensitive workflows such as finance or customer communications.</p>
+            <h3>Monitoring and Metrics</h3>
+            <p>Track action success rates, latency, and downstream outcomes. These signals inform both prompt tuning and connector selection over time.</p>
+
+            <h2>Relationship to Integration Platforms</h2>
+            <p>Automation connectors often wrap the same systems highlighted in <a href="Integration_Platforms.html">integration platform</a> deep dives, but they provide a higher-level abstraction. Instead of writing bespoke logic for each service, the connector orchestrates authentication, retries, and data mapping on the agent's behalf.</p>
+
+            <p class="back-link"><a href="AI_Interfaces.html">&larr; Back to AI Interfaces</a></p>
+            <p class="back-link"><a href="../index.html">&larr; Back to Main Page</a></p>
+        </div>
+    </div>
+</body>
+</html>
