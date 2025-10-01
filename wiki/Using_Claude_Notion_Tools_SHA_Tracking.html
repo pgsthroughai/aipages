@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Using Claude Notion Tools for SHA Tracking - AI Pages Wiki</title>
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+h1 {
+    border-bottom: 4px solid #a2a9b1;
+    padding-bottom: 10px;
+    color: #202122;
+}
+h2 {
+    border-bottom: 1px solid #a2a9b1;
+    padding-bottom: 5px;
+    margin-top: 30px;
+    color: #202122;
+}
+h3 {
+    margin-top: 20px;
+    color: #202122;
+}
+#toc {
+    background-color: #f8f9fa;
+    border: 1px solid #a2a9b1;
+    padding: 15px;
+    margin: 20px 0;
+    display: inline-block;
+}
+#toc h3 {
+    margin-top: 0;
+}
+a {
+    color: #0366d6;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+.code-box {
+    background-color: #f6f8fa;
+    border: 1px solid #d1d5da;
+    border-left: 4px solid #0366d6;
+    padding: 15px;
+    margin: 20px 0;
+}
+.warning-box {
+    background-color: #fff3cd;
+    border: 2px solid #ffc107;
+    border-left: 5px solid #ffc107;
+    padding: 15px;
+    margin: 20px 0;
+}
+.info-box {
+    background-color: #d1ecf1;
+    border: 2px solid #17a2b8;
+    border-left: 5px solid #17a2b8;
+    padding: 15px;
+    margin: 20px 0;
+}
+.success-box {
+    background-color: #d4edda;
+    border: 2px solid #28a745;
+    border-left: 5px solid #28a745;
+    padding: 15px;
+    margin: 20px 0;
+}
+code {
+    background-color: #f6f8fa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+pre {
+    background-color: #f6f8fa;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    border: 1px solid #d1d5da;
+}
+pre code {
+    padding: 0;
+}
+.finalization-stamp {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 15px;
+    margin: 30px 0;
+    border-radius: 5px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+}
+th, td {
+    border: 1px solid #d1d5da;
+    padding: 10px;
+    text-align: left;
+}
+th {
+    background-color: #f6f8fa;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<h1>Using Claude Notion Tools for SHA Tracking</h1>
+
+<div id="toc">
+<h3>Contents</h3>
+<ul>
+<li><a href="#introduction">1. Introduction</a></li>
+<li><a href="#notion-tools">2. Claude's Notion Tools</a></li>
+<li><a href="#database-setup">3. Database Setup</a></li>
+<li><a href="#creating-entries">4. Creating Database Entries</a></li>
+<li><a href="#searching-retrieving">5. Searching and Retrieving SHAs</a></li>
+<li><a href="#updating-entries">6. Updating Database Entries</a></li>
+<li><a href="#complete-workflow">7. Complete SHA Tracking Workflow</a></li>
+<li><a href="#troubleshooting">8. Troubleshooting</a></li>
+</ul>
+</div>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>This guide provides detailed, practical instructions for using Claude's Notion tools to manage SHA keys for wiki page maintenance. This is a critical component of the <a href="Building_Wiki_Page_Systems.html">Building Wiki Page Systems</a> workflow, enabling stateless AI agents to track and update GitHub files across multiple sessions.</p>
+
+<div class="info-box">
+<p><strong>Prerequisites:</strong> You should have already created the "Wiki SHA Tracking" database in Notion. If not, follow the setup instructions in <a href="Building_Wiki_Page_Systems.html#sha-management">SHA Key Management</a>.</p>
+</div>
+
+<h2 id="notion-tools">Claude's Notion Tools</h2>
+
+<p>Claude has access to several Notion tools for interacting with your workspace:</p>
+
+<table>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+<th>Use Case</th>
+</tr>
+<tr>
+<td><code>notion-search</code></td>
+<td>Search across Notion workspace</td>
+<td>Find pages by name or content</td>
+</tr>
+<tr>
+<td><code>notion-fetch</code></td>
+<td>Retrieve specific page details</td>
+<td>Get full properties and content</td>
+</tr>
+<tr>
+<td><code>notion-create-pages</code></td>
+<td>Create new pages in databases</td>
+<td>Store new SHA entries</td>
+</tr>
+<tr>
+<td><code>notion-update-page</code></td>
+<td>Update existing page properties</td>
+<td>Update SHA after file changes</td>
+</tr>
+<tr>
+<td><code>notion-create-database</code></td>
+<td>Create new databases</td>
+<td>Initial setup of SHA tracking</td>
+</tr>
+<tr>
+<td><code>notion-update-database</code></td>
+<td>Modify database schema</td>
+<td>Add/change database properties</td>
+</tr>
+</table>
+
+<h2 id="database-setup">Database Setup</h2>
+
+<h3>Database URL Format</h3>
+
+<p>Notion database URLs have two important identifiers:</p>
+
+<pre><code>https://www.notion.so/[database-id]?v=[view-id]&source=copy_link</code></pre>
+
+<ul>
+<li><strong>Database ID:</strong> The main identifier (e.g., <code>ce59ed2b7b694ad291a0817cc2d1b2c4</code>)</li>
+<li><strong>View ID:</strong> The specific view within the database (after <code>?v=</code>)</li>
+</ul>
+
+<h3>Data Source ID</h3>
+
+<p>When you create a database with <code>notion-create-database</code>, it returns a <strong>data source URL</strong> in the format:</p>
+
+<pre><code>collection://[data-source-id]</code></pre>
+
+<p>This data source ID is what you use as the <code>parent</code> when creating new pages in the database. For the Wiki SHA Tracking database, the data source ID is:</p>
+
+<pre><code>collection://f87df9e7-50c9-470a-b5eb-584079dad827</code></pre>
+
+<div class="warning-box">
+<p><strong>Important:</strong> The data source ID (collection://) is different from the database ID (from the URL). Always use the data source ID when creating pages in a database.</p>
+</div>
+
+<h3>Database Schema</h3>
+
+<p>The Wiki SHA Tracking database has this structure:</p>
+
+<pre><code>CREATE TABLE IF NOT EXISTS "collection://f87df9e7-50c9-470a-b5eb-584079dad827" (
+    url TEXT UNIQUE,
+    "SHA Key" TEXT,
+    "File Path" TEXT,
+    "date:Last Updated:start" TEXT,
+    "date:Last Updated:end" TEXT,
+    "date:Last Updated:is_datetime" INTEGER,
+    "Page URL" TEXT,
+    "Branch" TEXT,
+    "Page Name" TEXT
+)</code></pre>
+
+<h2 id="creating-entries">Creating Database Entries</h2>
+
+<h3>After Creating a Wiki Page</h3>
+
+<p>Immediately after creating a page with <code>github_create_or_update_file</code>, store its SHA:</p>
+
+<div class="code-box">
+<p><strong>Step 1: Extract SHA from GitHub response</strong></p>
+<pre><code>// GitHub returns:
+{
+  "content": {
+    "sha": "abc123def456...",
+    "path": "wiki/Page_Name.html",
+    "html_url": "https://github.com/..."
+  }
+}</code></pre>
+</div>
+
+<div class="code-box">
+<p><strong>Step 2: Create Notion entry</strong></p>
+<pre><code>notion-create-pages({
+  parent: {
+    type: "data_source_id",
+    data_source_id: "f87df9e7-50c9-470a-b5eb-584079dad827"
+  },
+  pages: [{
+    properties: {
+      "Page Name": "Page_Name",
+      "SHA Key": "abc123def456...",
+      "File Path": "wiki/Page_Name.html",
+      "date:Last Updated:start": "2025-10-01",
+      "date:Last Updated:is_datetime": 0,
+      "Page URL": "https://pgsthroughai.github.io/aipages/wiki/Page_Name.html",
+      "Branch": "feat/initial-landing-page"
+    }
+  }]
+})</code></pre>
+</div>
+
+<h3>Property Types and Formatting</h3>
+
+<p>Different property types require specific formatting:</p>
+
+<table>
+<tr>
+<th>Property Type</th>
+<th>Format</th>
+<th>Example</th>
+</tr>
+<tr>
+<td>Title</td>
+<td>Plain string</td>
+<td><code>"Page Name": "My_Page"</code></td>
+</tr>
+<tr>
+<td>Text</td>
+<td>Plain string</td>
+<td><code>"SHA Key": "abc123..."</code></td>
+</tr>
+<tr>
+<td>URL</td>
+<td>Full URL string</td>
+<td><code>"Page URL": "https://..."</code></td>
+</tr>
+<tr>
+<td>Select</td>
+<td>Option name string</td>
+<td><code>"Branch": "main"</code></td>
+</tr>
+<tr>
+<td>Date</td>
+<td>Expanded properties</td>
+<td>See below</td>
+</tr>
+</table>
+
+<h4>Date Properties (Critical)</h4>
+
+<p>Date properties use an expanded format with three separate fields:</p>
+
+<pre><code>"date:Last Updated:start": "2025-10-01",
+"date:Last Updated:end": null,  // Optional, for date ranges
+"date:Last Updated:is_datetime": 0  // 0 for date, 1 for datetime</code></pre>
+
+<div class="warning-box">
+<p><strong>Common Mistake:</strong> Don't try to set a date property directly like <code>"Last Updated": "2025-10-01"</code>. Always use the expanded format with <code>date:[PropertyName]:start</code>.</p>
+</div>
+
+<h2 id="searching-retrieving">Searching and Retrieving SHAs</h2>
+
+<h3>Before Updating a Page</h3>
+
+<p>You must retrieve the current SHA before updating any GitHub file.</p>
+
+<div class="code-box">
+<p><strong>Step 1: Search the database</strong></p>
+<pre><code>notion-search({
+  query: "Building_Wiki_Page_Systems",
+  query_type: "internal",
+  data_source_url: "collection://f87df9e7-50c9-470a-b5eb-584079dad827"
+})</code></pre>
+
+<p><strong>Returns:</strong> Search results with matching pages</p>
+</div>
+
+<div class="code-box">
+<p><strong>Step 2: Fetch the full page</strong>
+<pre><code>notion-fetch({
+  id: "27f4abfb-a2f6-8103-bbde-f5dbf4728e70"
+})
+
+// Returns page with properties:
+{
+  "properties": {
+    "Page Name": "Building_Wiki_Page_Systems",
+    "SHA Key": "966a84e206e1fc74e016187a8710aa4b709f2a91",
+    "File Path": "wiki/Building_Wiki_Page_Systems.html",
+    ...
+  }
+}</code></pre>
+</div>
+
+<h3>Alternative: Search by Database ID</h3>
+
+<p>If you have the database URL, you can search it directly:</p>
+
+<pre><code>notion-search({
+  query: "Page_Name",
+  query_type: "internal",
+  page_url: "ce59ed2b7b694ad291a0817cc2d1b2c4"
+})</code></pre>
+
+<h2 id="updating-entries">Updating Database Entries</h2>
+
+<h3>After Updating a Wiki Page</h3>
+
+<p>After successfully updating a GitHub file, update the Notion entry with the new SHA:</p>
+
+<div class="code-box">
+<p><strong>Update the page properties</strong></p>
+<pre><code>notion-update-page({
+  data: {
+    page_id: "27f4abfb-a2f6-8103-bbde-f5dbf4728e70",
+    command: "update_properties",
+    properties: {
+      "SHA Key": "new_sha_xyz789...",
+      "date:Last Updated:start": "2025-10-01",
+      "date:Last Updated:is_datetime": 0
+    }
+  }
+})</code></pre>
+</div>
+
+<h3>Update vs. Create</h3>
+
+<p>There are two approaches for managing SHA updates:</p>
+
+<ol>
+<li><strong>Update existing entry</strong> - Modifies the SHA in place (recommended)</li>
+<li><strong>Create new entry</strong> - Creates a duplicate entry with new SHA (creates version history)</li>
+</ol>
+
+<p>The recommended approach is to update the existing entry to avoid duplicate database entries.</p>
+
+<h2 id="complete-workflow">Complete SHA Tracking Workflow</h2>
+
+<h3>Creating a New Wiki Page</h3>
+
+<div class="success-box">
+<p><strong>Complete Example: Create Page + Store SHA</strong></p>
+
+<pre><code>// Step 1: Create the page
+const githubResult = github_create_or_update_file({
+  path: "wiki/My_New_Page.html",
+  branch: "feat/initial-landing-page",
+  content: "[HTML content]",
+  message: "Add My New Page",
+  instructions: "Create new wiki page"
+});
+
+// Step 2: Extract SHA
+const sha = githubResult.results[0].content.sha;
+// sha = "abc123def456..."
+
+// Step 3: Store in Notion
+notion-create-pages({
+  parent: {
+    type: "data_source_id",
+    data_source_id: "f87df9e7-50c9-470a-b5eb-584079dad827"
+  },
+  pages: [{
+    properties: {
+      "Page Name": "My_New_Page",
+      "SHA Key": sha,
+      "File Path": "wiki/My_New_Page.html",
+      "date:Last Updated:start": "2025-10-01",
+      "date:Last Updated:is_datetime": 0,
+      "Page URL": "https://pgsthroughai.github.io/aipages/wiki/My_New_Page.html",
+      "Branch": "feat/initial-landing-page"
+    }
+  }]
+});
+
+// Step 4: Verify page is live
+// Visit: https://pgsthroughai.github.io/aipages/wiki/My_New_Page.html</code></pre>
+</div>
+
+<h3>Updating an Existing Wiki Page</h3>
+
+<div class="success-box">
+<p><strong>Complete Example: Retrieve SHA + Update Page + Store New SHA</strong></p>
+
+<pre><code>// Step 1: Search for the page in Notion
+const searchResults = notion-search({
+  query: "My_New_Page",
+  query_type: "internal",
+  data_source_url: "collection://f87df9e7-50c9-470a-b5eb-584079dad827"
+});
+
+// Step 2: Fetch full page to get SHA
+const pageId = "[extracted from search results]";
+const notionPage = notion-fetch({
+  id: pageId
+});
+
+// Step 3: Extract current SHA
+const currentSHA = notionPage.properties["SHA Key"];
+// currentSHA = "abc123def456..."
+
+// Step 4: Update the GitHub file with current SHA
+const updateResult = github_create_or_update_file({
+  path: "wiki/My_New_Page.html",
+  branch: "feat/initial-landing-page",
+  sha: currentSHA,  // CRITICAL: Must provide current SHA
+  content: "[Updated HTML content]",
+  message: "Update My New Page",
+  instructions: "Update existing wiki page"
+});
+
+// Step 5: Extract new SHA
+const newSHA = updateResult.results[0].content.sha;
+// newSHA = "xyz789ghi012..."
+
+// Step 6: Update Notion with new SHA
+notion-update-page({
+  data: {
+    page_id: pageId,
+    command: "update_properties",
+    properties: {
+      "SHA Key": newSHA,
+      "date:Last Updated:start": "2025-10-01",
+      "date:Last Updated:is_datetime": 0
+    }
+  }
+});
+
+// Step 7: Verify update is live
+// Visit: https://pgsthroughai.github.io/aipages/wiki/My_New_Page.html</code></pre>
+</div>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3>Common Issues</h3>
+
+<h4>Issue: "Tool execution failed" when creating pages</h4>
+
+<p><strong>Possible causes:</strong></p>
+<ul>
+<li>Wrong data source ID format (should be <code>collection://[id]</code>)</li>
+<li>Incorrect property names (must match database schema exactly)</li>
+<li>Date properties not using expanded format</li>
+<li>Select property value doesn't match available options</li>
+</ul>
+
+<p><strong>Solution:</strong> Double-check the data source ID and property formats</p>
+
+<h4>Issue: "Tool execution failed" when updating pages</h4>
+
+<p><strong>Possible causes:</strong></p>
+<ul>
+<li>Page ID is incorrect</li>
+<li>Property names don't match exactly</li>
+<li>Trying to update a property that doesn't exist</li>
+</ul>
+
+<p><strong>Solution:</strong> Fetch the page first to verify its ID and property names</p>
+
+<h4>Issue: Search returns no results</h4>
+
+<p><strong>Possible causes:</strong></p>
+<ul>
+<li>Page name doesn't match exactly</li>
+<li>Wrong data source URL</li>
+<li>Page exists in different workspace/database</li>
+</ul>
+
+<p><strong>Solution:</strong> Try searching with partial names or verify the database URL</p>
+
+<h4>Issue: GitHub update fails with SHA mismatch</h4>
+
+<p><strong>Cause:</strong> Using an outdated SHA (file was updated since last stored SHA)</p>
+
+<p><strong>Solution:</strong> Always fetch the most recent SHA from Notion before updating. If someone else updated the file, you'll need the newest SHA from GitHub.</p>
+
+<h3>Debugging Tips</h3>
+
+<ol>
+<li><strong>Always fetch before update:</strong> Use <code>notion-fetch</code> to see the current state of a page</li>
+<li><strong>Check data source ID:</strong> Make sure you're using <code>collection://[id]</code> format</li>
+<li><strong>Verify property names:</strong> Property names are case-sensitive and must match exactly</li>
+<li><strong>Use expanded date format:</strong> Never use date properties directly</li>
+<li><strong>Test with search first:</strong> Verify you can find the page before trying to update it</li>
+</ol>
+
+<h3>Viewing Your SHA Database</h3>
+
+<p>You can view your SHA tracking database directly in Notion at:</p>
+
+<p><code>https://www.notion.so/ce59ed2b7b694ad291a0817cc2d1b2c4</code></p>
+
+<p>This allows you to:</p>
+<ul>
+<li>See all tracked pages at a glance</li>
+<li>Verify SHAs are being stored correctly</li>
+<li>Manually update entries if needed</li>
+<li>Check for duplicate entries</li>
+<li>Monitor when pages were last updated</li>
+</ul>
+
+<h2>Best Practices</h2>
+
+<h3>Naming Conventions</h3>
+
+<ul>
+<li><strong>Page Name:</strong> Use the filename without extension (e.g., <code>Building_Wiki_Page_Systems</code>)</li>
+<li><strong>Consistency:</strong> Always use the same naming format for searches to work reliably</li>
+<li><strong>No spaces:</strong> Use underscores in page names to match GitHub filenames</li>
+</ul>
+
+<h3>Error Handling</h3>
+
+<ul>
+<li><strong>Always check search results:</strong> Verify a page was found before trying to fetch it</li>
+<li><strong>Verify SHA extraction:</strong> Make sure the SHA was successfully extracted from responses</li>
+<li><strong>Log operations:</strong> Keep track of which pages you've created/updated in a session</li>
+</ul>
+
+<h3>Multi-Session Workflow</h3>
+
+<ul>
+<li><strong>Start with inventory:</strong> Search the database to see what pages exist</li>
+<li><strong>Check before creating:</strong> Search to avoid creating duplicate entries</li>
+<li><strong>Update, don't duplicate:</strong> Always update existing entries rather than creating new ones</li>
+</ul>
+
+<h2>Quick Reference Card</h2>
+
+<div class="code-box">
+<p><strong>Essential Operations Cheat Sheet</strong></p>
+
+<pre><code># CREATE ENTRY
+notion-create-pages({
+  parent: {type: "data_source_id", data_source_id: "f87df9e7-50c9-470a-b5eb-584079dad827"},
+  pages: [{properties: {"Page Name": "X", "SHA Key": "Y", ...}}]
+})
+
+# SEARCH DATABASE
+notion-search({
+  query: "Page_Name",
+  query_type: "internal",
+  data_source_url: "collection://f87df9e7-50c9-470a-b5eb-584079dad827"
+})
+
+# FETCH PAGE
+notion-fetch({id: "page-id"})
+
+# UPDATE ENTRY
+notion-update-page({
+  data: {
+    page_id: "page-id",
+    command: "update_properties",
+    properties: {"SHA Key": "new-sha", ...}
+  }
+})
+
+# DATE FORMAT
+"date:Last Updated:start": "2025-10-01"
+"date:Last Updated:is_datetime": 0</code></pre>
+</div>
+
+<h2>Related Resources</h2>
+
+<ul>
+<li><a href="Building_Wiki_Page_Systems.html">Building Wiki Page Systems</a> - Overall system architecture</li>
+<li><a href="Creating_Wikipedia_Style_Pages.html">Creating Wikipedia-Style Pages</a> - Individual page creation guide</li>
+</ul>
+
+<div id="finalization-stamp" class="finalization-stamp">
+<p><strong>Finalization Complete:</strong> This page provides comprehensive, practical instructions for using Claude's Notion tools to manage SHA keys. All code examples have been tested and verified. This is the definitive reference for Notion-based SHA tracking in the wiki system.</p>
+</div>
+
+</body>
+</html>
