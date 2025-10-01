@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Guide: Using Claude Notion Tools</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; margin-top: 30px; border-left: 4px solid #3498db; padding-left: 15px; }
+        .success { background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 15px 0; }
+        .warning { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; }
+        .error { background-color: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; margin: 15px 0; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; margin: 15px 0; }
+        .code-block { background-color: #f4f4f4; border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin: 15px 0; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Complete Guide: Using Claude Notion Tools</h1>
+    
+    <p><strong>Created:</strong> October 1, 2025</p>
+
+    <h2>Understanding GitHub SHA Keys</h2>
+    
+    <div class="info">
+        <h3>What is a SHA in GitHub?</h3>
+        <p>A SHA identifies:</p>
+        <ul>
+            <li><strong>File SHA:</strong> Unique ID for specific file content version</li>
+            <li><strong>Commit SHA:</strong> Unique ID for a commit</li>
+        </ul>
+        <p><strong>For API updates: Use FILE SHA, not commit SHA</strong></p>
+    </div>
+
+    <div class="warning">
+        <h3>Critical: SHA Must Match Current File</h3>
+        <p>When updating files via GitHub API, the SHA MUST match the current file version.</p>
+        <p>Error if mismatch: <code>"file.html does not match [old-sha]"</code></p>
+        <p><strong>Cause:</strong> File was updated after SHA was saved in Notion</p>
+    </div>
+
+    <h2>Notion Search Workflow</h2>
+
+    <div class="success">
+        <h3>Step 1: Search for Database</h3>
+        <div class="code-block">
+notion-search<br/>
+query: "Wiki SHA Tracker"<br/>
+query_type: "internal"
+        </div>
+    </div>
+
+    <div class="success">
+        <h3>Step 2: Fetch Database Structure</h3>
+        <div class="code-block">
+notion-fetch<br/>
+id: [database-id-from-search]
+        </div>
+        <p>Returns: schema, properties, data source URL (collection://...)</p>
+    </div>
+
+    <div class="error">
+        <h3>Step 3: What Does NOT Work</h3>
+        <div class="code-block">
+notion-search<br/>
+data_source_url: "collection://..."<br/>
+query: ""
+        </div>
+        <p><strong>Result: Tool execution failure</strong></p>
+    </div>
+
+    <div class="success">
+        <h3>Step 3: What DOES Work</h3>
+        <div class="code-block">
+notion-search<br/>
+query: "SHA Key"  (or other distinctive term)<br/>
+query_type: "internal"
+        </div>
+        <p>Searches all workspace, including database entries</p>
+    </div>
+
+    <div class="success">
+        <h3>Step 4: Fetch Individual Pages</h3>
+        <div class="code-block">
+notion-fetch<br/>
+id: [page-id-from-search]
+        </div>
+        <p>Returns all properties including SHA Key, File Path, Branch</p>
+    </div>
+
+    <h2>GitHub Integration</h2>
+
+    <div class="info">
+        <h3>One SHA Parameter - Two Uses</h3>
+        <p><strong>Creating NEW file:</strong> OMIT sha parameter</p>
+        <p><strong>Updating existing file:</strong> MUST include current file sha</p>
+    </div>
+
+    <div class="success">
+        <h3>Creating New File (No SHA)</h3>
+        <div class="code-block">
+github_create_or_update_file<br/>
+branch: "feat/initial-landing-page"<br/>
+path: "wiki/New_File.html"<br/>
+content: [html]<br/>
+message: "Create new file"<br/>
+(NO sha parameter)
+        </div>
+    </div>
+
+    <div class="warning">
+        <h3>Updating Existing File (SHA Required)</h3>
+        <div class="code-block">
+github_create_or_update_file<br/>
+branch: "feat/initial-landing-page"<br/>
+path: "wiki/Existing_File.html"<br/>
+content: [html]<br/>
+sha: "dd44a65b3c1951df7cbcdcff044334881cfe69e1"<br/>
+message: "Update file"
+        </div>
+        <p><strong>SHA must be current or update fails</strong></p>
+    </div>
+
+    <h2>Key Observations</h2>
+
+    <div class="info">
+        <ol>
+            <li><strong>Single SHA parameter</strong> in GitHub tool - used only for updates</li>
+            <li><strong>No separate commit SHA</strong> needed - commit created automatically</li>
+            <li><strong>New file creation</strong> returns a new file SHA in response</li>
+            <li><strong>File SHA changes</strong> every time content changes</li>
+            <li><strong>Notion sync is manual</strong> - update SHA in Notion after GitHub changes</li>
+        </ol>
+    </div>
+
+    <h2>Best Practices</h2>
+
+    <div class="success">
+        <ul>
+            <li>Create new files when SHA uncertain</li>
+            <li>Update Notion immediately after GitHub changes</li>
+            <li>Use workspace search, not data_source_url</li>
+            <li>Search with distinctive terms from database</li>
+            <li>Fetch pages individually by ID</li>
+        </ul>
+    </div>
+
+    <div class="error">
+        <h3>Common Mistakes</h3>
+        <ul>
+            <li>Trying to search with data_source_url parameter</li>
+            <li>Using outdated SHA from Notion</li>
+            <li>Confusing commit SHA with file SHA</li>
+            <li>Forgetting to update Notion after GitHub changes</li>
+        </ul>
+    </div>
+
+</body>
+</html>
