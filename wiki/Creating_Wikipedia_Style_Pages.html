@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creating Wikipedia-Style Wiki Pages - Technical Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #a2a9b1;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #7f8c8d;
+        }
+        .protocol-box {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .workflow-box {
+            background-color: #f0f8ff;
+            border: 2px solid #4a90e2;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .code-example {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .critical-box {
+            background-color: #fee;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .example-html {
+            background-color: #fafafa;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        ul {
+            padding-left: 25px;
+        }
+        li {
+            margin: 10px 0;
+        }
+        .back-link {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .step-number {
+            font-weight: bold;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Creating Wikipedia-Style Wiki Pages: Comprehensive Guide</h1>
+        
+        <p><strong>Purpose:</strong> Instructions for creating comprehensive, heavily hyperlinked HTML pages in Wikipedia style for this wiki. Adapted from a multi-agent system but applicable to single-session work with Claude.</p>
+
+        <p><strong>Core Goal:</strong> Create well-structured, authoritative, heavily hyperlinked HTML pages that serve as knowledge resources.</p>
+
+        <h2>Core Protocol</h2>
+
+        <div class="protocol-box">
+            <h3>Your Mission</h3>
+            <p>Create comprehensive, well-structured, and heavily hyperlinked HTML pages based on a given topic. Each page should be:</p>
+            <ul>
+                <li><strong>Thoroughly researched</strong> using web search and authoritative sources</li>
+                <li><strong>Heavily hyperlinked</strong> with every proper noun, technical term, and concept linked</li>
+                <li><strong>Verifiable</strong> with all links tested and confirmed functional</li>
+                <li><strong>Well-structured</strong> with clear sections, table of contents, and optional infobox</li>
+                <li><strong>Wikipedia-style</strong> in formatting and presentation</li>
+            </ul>
+        </div>
+
+        <h2>Tool Usage Strategy</h2>
+
+        <h3>Available Tools</h3>
+        <ul>
+            <li><strong>web_search:</strong> For broad discovery and initial research</li>
+            <li><strong>web_fetch:</strong> For deep-diving into specific URLs and verifying links</li>
+            <li><strong>browserless_fetch_a_site_s_html:</strong> Fallback when web_fetch fails</li>
+            <li><strong>github_create_or_update_file:</strong> To save your HTML pages to the repository</li>
+            <li><strong>browserless_fetch_a_site_s_html:</strong> To browse existing wiki pages</li>
+        </ul>
+
+        <div class="workflow-box">
+            <h3>Tool Usage Pattern</h3>
+            <div class="code-example">
+<span class="step-number">Step 1:</span> Use web_search for broad overview
+   web_search(query="your topic overview")
+   → Returns: synthesized info + list of URLs
+
+<span class="step-number">Step 2:</span> Use web_fetch for deep research
+   web_fetch(url="most promising URL from search")
+   → Returns: full page content for analysis
+
+<span class="step-number">Step 3:</span> If web_fetch fails, use browserless
+   browserless_fetch_a_site_s_html({
+       url: "the URL",
+       instructions: "fetch page content"
+   })
+
+<span class="step-number">Step 4:</span> Create/update page in GitHub
+   github_create_or_update_file({
+       path: "wiki/Your_Page.html",
+       branch: "feat/initial-landing-page",
+       content: "your HTML content",
+       message: "commit message",
+       instructions: "description"
+   })
+            </div>
+        </div>
+
+        <h2>The Research & Write Cycle</h2>
+
+        <p>Follow this detailed workflow for building each page:</p>
+
+        <h3>Phase 1: Initial Research</h3>
+        <ol>
+            <li>
+                <strong>Broad Search:</strong> Use web_search with 2-3 broad queries to understand the topic
+                <div class="code-example">web_search(query="what is [topic]")
+web_search(query="[topic] overview applications")</div>
+            </li>
+            <li>
+                <strong>Identify Key Sources:</strong> From search results, identify authoritative URLs (academic, government, established organizations)
+            </li>
+            <li>
+                <strong>Deep Dive:</strong> Use web_fetch on 3-5 most promising URLs to gather detailed information
+            </li>
+        </ol>
+
+        <h3>Phase 2: Draft Initial Content</h3>
+        <ol start="4">
+            <li>
+                <strong>Structure First:</strong> Create basic HTML structure with:
+                <ul>
+                    <li>Title and introduction</li>
+                    <li>Main section headings (h2, h3)</li>
+                    <li>Placeholder for table of contents</li>
+                    <li>Optional infobox</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Write Core Content:</strong> Add main informational paragraphs based on research
+            </li>
+            <li>
+                <strong>Save First Draft:</strong> Create file in GitHub repository
+            </li>
+        </ol>
+
+        <h3>Phase 3: Iterative Enrichment (The Linking Phase)</h3>
+        
+        <div class="critical-box">
+            <strong>CRITICAL: This is your primary work loop.</strong> Most of your time will be spent in this phase, adding and verifying links.
+        </div>
+
+        <p>For each statement, term, or concept that needs a link:</p>
+
+        <ol start="7">
+            <li>
+                <strong>Check Local First:</strong> Browse existing wiki pages to see if we have a relevant internal page
+                <div class="code-example">browserless_fetch_a_site_s_html({
+    url: "https://github.com/pgsthroughai/aipages/tree/refs/heads/feat/initial-landing-page/wiki",
+    instructions: "List existing wiki pages"
+})</div>
+            </li>
+            <li>
+                <strong>Search for External Link:</strong> If no local page exists, search for authoritative source
+                <div class="code-example">web_search(query="specific term you need to link")</div>
+            </li>
+            <li>
+                <strong>Verify Link:</strong> Use web_fetch to read and verify the source
+                <div class="code-example">web_fetch(url="candidate URL")
+// Read the content carefully
+// Confirm it's authoritative and relevant
+// Confirm it specifically supports your claim</div>
+            </li>
+            <li>
+                <strong>Update Draft:</strong> Add the verified link to your HTML content
+            </li>
+            <li>
+                <strong>Save Updated Version:</strong> Commit the update to GitHub
+            </li>
+        </ol>
+
+        <h3>Phase 4: Final Review</h3>
+        <ol start="12">
+            <li>Read the entire page for coherence</li>
+            <li>Verify all internal links point to existing files</li>
+            <li>Test critical external links with web_fetch</li>
+            <li>Ensure proper HTML structure and styling</li>
+            <li>Add finalization stamp (see below)</li>
+        </ol>
+
+        <h2>Link Verification Protocol</h2>
+
+        <div class="critical-box">
+            <h3>CRITICAL: Persistent and Adaptive Link Sourcing</h3>
+            <p>Your mission is to find the single best, verifiable source for each claim. Failed URLs are routine - adapt and continue.</p>
+        </div>
+
+        <h3>The Algorithm</h3>
+
+        <div class="workflow-box">
+            <div class="code-example">
+<strong>1. Generate Candidates:</strong>
+   Use web_search to generate 5-10 candidate URLs
+   Prioritize: scientific journals, .gov, .edu, established orgs
+
+<strong>2. Iterate and Validate:</strong>
+   For each URL in your list:
+   
+   a. Call web_fetch(url)
+      - If fails: Log it, move to next candidate
+      - Do NOT conclude the tool is faulty
+   
+   b. If web_fetch succeeds:
+      - Review content carefully
+      - Verify it's authoritative
+      - Verify it specifically supports the claim
+      - If yes: Add link and DONE
+      - If no: Move to next candidate
+
+<strong>3. Adapt and Retry:</strong>
+   If you exhaust all candidates:
+   - Reformulate your search query
+   - Try a different angle
+   - Generate NEW list of candidates
+
+<strong>4. Final Escape Hatch:</strong>
+   After 2-3 different search queries:
+   - If still no verifiable source found
+   - Leave claim unlinked
+   - Log the difficulty
+   - Move to next task
+            </div>
+        </div>
+
+        <h3>Post-Insertion Validation</h3>
+        <p><strong>CRITICAL:</strong> After inserting a link, validate it again with web_fetch. Immediately remove any link that is:</p>
+        <ul>
+            <li>Not functional (returns error)</li>
+            <li>Not a proper source for the statement</li>
+            <li>Not authoritative or reliable</li>
+        </ul>
+
+        <h2>Hyperlinking Requirements</h2>
+
+        <h3>What to Link</h3>
+        <ul>
+            <li><strong>Every proper noun:</strong> People, places, organizations, products</li>
+            <li><strong>Every technical term:</strong> Specialized vocabulary, jargon</li>
+            <li><strong>Every concept:</strong> Theories, methodologies, frameworks</li>
+            <li><strong>Every claim:</strong> Facts that need citation</li>
+        </ul>
+
+        <h3>Link Priorities</h3>
+        <ol>
+            <li><strong>Internal links first:</strong> Link to existing wiki pages before external sources</li>
+            <li><strong>Authoritative sources:</strong> Prefer .edu, .gov, peer-reviewed journals</li>
+            <li><strong>Direct relevance:</strong> Link must specifically support the claim</li>
+        </ol>
+
+        <h3>Descriptive Anchor Text</h3>
+        <div class="code-example">
+<strong>GOOD:</strong> <a href="url">Model Context Protocol</a>
+<strong>BAD:</strong>  <a href="url">click here</a>
+
+<strong>GOOD:</strong> <a href="url">senolytic compound fisetin</a>
+<strong>BAD:</strong>  <a href="url">this compound</a>
+        </div>
+
+        <h2>Example Workflow</h2>
+
+        <div class="workflow-box">
+            <h3>Scenario: Adding section about "Fisetin"</h3>
+            <div class="code-example">
+<strong>Thought:</strong> "I need a general overview of Fisetin"
+
+<strong>Action 1:</strong> web_search(query="what is fisetin senolytic")
+
+<strong>Result:</strong> Several papers mentioned, NIH link looks authoritative
+
+<strong>Thought:</strong> "I'll verify the NIH source"
+
+<strong>Action 2:</strong> web_fetch(url="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6197652/")
+
+<strong>Result:</strong> Success! Detailed information about Fisetin's mechanism
+
+<strong>Thought:</strong> "I'll add this content with the link"
+
+<strong>Action 3:</strong> Update HTML content in memory with new section
+
+<strong>Thought:</strong> "I mentioned 'caspase-3' - this needs a link"
+
+<strong>Action 4:</strong> Check existing wiki pages for caspase-3 page
+                (Not found)
+
+<strong>Action 5:</strong> web_search(query="caspase-3 apoptosis mechanism")
+
+<strong>Result:</strong> Found good review article
+
+<strong>Action 6:</strong> web_fetch(url="review article URL")
+
+<strong>Result:</strong> Verified content is relevant
+
+<strong>Action 7:</strong> Add <a> tag around "caspase-3" linking to source
+
+<strong>Action 8:</strong> github_create_or_update_file with updated content
+            </div>
+        </div>
+
+        <h2>HTML Structure & Styling</h2>
+
+        <h3>Required Elements</h3>
+        <ul>
+            <li><strong>DOCTYPE and proper HTML5 structure</strong></li>
+            <li><strong>Meta charset UTF-8</strong></li>
+            <li><strong>Descriptive title tag</strong></li>
+            <li><strong>Embedded CSS styling</strong> (Wikipedia-like)</li>
+            <li><strong>Main heading (h1)</strong> with bottom border</li>
+            <li><strong>Optional infobox</strong> floated right</li>
+            <li><strong>Table of contents</strong> with anchor links</li>
+            <li><strong>Section headings (h2, h3)</strong> with borders</li>
+            <li><strong>Finalization stamp</strong> at bottom</li>
+        </ul>
+
+        <h3>CSS Requirements</h3>
+        <div class="code-example">
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+h1 {
+    border-bottom: 4px solid #a2a9b1;
+    padding-bottom: 10px;
+}
+
+h2 {
+    border-bottom: 1px solid #a2a9b1;
+    padding-bottom: 5px;
+    margin-top: 30px;
+}
+
+.infobox {
+    float: right;
+    width: 300px;
+    background-color: #f8f9fa;
+    border: 1px solid #a2a9b1;
+    padding: 10px;
+    margin: 0 0 20px 20px;
+}
+
+#toc {
+    background-color: #f8f9fa;
+    border: 1px solid #a2a9b1;
+    padding: 15px;
+    margin: 20px 0;
+    display: inline-block;
+}
+
+a {
+    color: #0366d6;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+        </div>
+
+        <h2>Complete Example Template</h2>
+
+        <div class="example-html">
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset='utf-8'&gt;
+    &lt;title&gt;Article Title - Wiki Name&lt;/title&gt;
+    &lt;style&gt;
+        /* CSS from above */
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Article Title&lt;/h1&gt;
+    
+    &lt;div class="infobox"&gt;
+        &lt;h3&gt;Quick Facts&lt;/h3&gt;
+        &lt;table&gt;
+            &lt;tr&gt;
+                &lt;td&gt;&lt;strong&gt;Type:&lt;/strong&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;a href="URL"&gt;Type Name&lt;/a&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;&lt;strong&gt;Category:&lt;/strong&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;a href="URL"&gt;Category Name&lt;/a&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+    
+    &lt;div id="toc"&gt;
+        &lt;h3&gt;Contents&lt;/h3&gt;
+        &lt;ul&gt;
+            &lt;li&gt;&lt;a href="#introduction"&gt;1. Introduction&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="#history"&gt;2. History&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="#features"&gt;3. Features&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+    
+    &lt;p&gt;Introduction paragraph with &lt;a href="URL"&gt;external links&lt;/a&gt; 
+    and &lt;a href="Local_Page.html"&gt;internal links&lt;/a&gt; to related 
+    wiki pages...&lt;/p&gt;
+    
+    &lt;h2 id="history"&gt;History&lt;/h2&gt;
+    &lt;p&gt;Content with &lt;a href="URL"&gt;proper citations&lt;/a&gt; and 
+    &lt;a href="#features"&gt;internal section links&lt;/a&gt;...&lt;/p&gt;
+    
+    &lt;h2 id="features"&gt;Features&lt;/h2&gt;
+    &lt;p&gt;More content...&lt;/p&gt;
+    
+    &lt;div id="finalization-stamp" class="finalization-stamp"&gt;
+        &lt;p&gt;&lt;strong&gt;Finalization Complete:&lt;/strong&gt; This page has been 
+        reviewed and meets all criteria. All links have been verified, 
+        and the content is considered complete and accurate.&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <h2>Finalization Stamp</h2>
+
+        <p>Add this to every completed page:</p>
+
+        <div class="code-example">
+&lt;div id="finalization-stamp" class="finalization-stamp"&gt;
+    &lt;p&gt;&lt;strong&gt;Finalization Complete:&lt;/strong&gt; This page has been 
+    reviewed and meets all criteria in the Definition of Done. All 
+    links have been verified, and the content is considered complete 
+    and accurate.&lt;/p&gt;
+&lt;/div&gt;
+        </div>
+
+        <h2>Checklist: Definition of Done</h2>
+
+        <p>A page is complete when:</p>
+
+        <ol>
+            <li>✅ All major concepts have sections</li>
+            <li>✅ Every proper noun is hyperlinked</li>
+            <li>✅ Every technical term is hyperlinked</li>
+            <li>✅ All external links verified with web_fetch</li>
+            <li>✅ All internal links point to existing files</li>
+            <li>✅ Table of contents included with working anchors</li>
+            <li>✅ Infobox included (if appropriate)</li>
+            <li>✅ Proper HTML5 structure</li>
+            <li>✅ Wikipedia-style CSS applied</li>
+            <li>✅ Finalization stamp added</li>
+            <li>✅ Page is readable and coherent</li>
+            <li>✅ Sources are authoritative</li>
+        </ol>
+
+        <h2>Common Pitfalls to Avoid</h2>
+
+        <div class="critical-box">
+            <h3>❌ Do NOT Do These Things</h3>
+            <ul>
+                <li><strong>Placeholder links:</strong> Never add "TODO" or dummy links</li>
+                <li><strong>Unverified links:</strong> Never link without using web_fetch first</li>
+                <li><strong>Broken links:</strong> Test every link before adding</li>
+                <li><strong>Poor anchor text:</strong> Avoid "click here" or "this link"</li>
+                <li><strong>Missing internal links:</strong> Always check for existing wiki pages first</li>
+                <li><strong>Incomplete sections:</strong> Don't leave stub sections</li>
+                <li><strong>Poor structure:</strong> Must have TOC and proper headings</li>
+                <li><strong>No citations:</strong> Claims need authoritative sources</li>
+            </ul>
+        </div>
+
+        <h2>Working with GitHub</h2>
+
+        <h3>File Naming Convention</h3>
+        <ul>
+            <li>Use underscores for spaces: <code>Model_Context_Protocol.html</code></li>
+            <li>Use proper capitalization: <code>AI_Assisted_Workflows.html</code></li>
+            <li>Keep filenames descriptive but concise</li>
+        </ul>
+
+        <h3>Save to Repository</h3>
+        <div class="code-example">
+github_create_or_update_file({
+    path: "wiki/Your_Page_Title.html",
+    branch: "feat/initial-landing-page",
+    content: "complete HTML content",
+    message: "Add Your Page Title wiki page",
+    instructions: "Create new wiki page about [topic]"
+})
+        </div>
+
+        <h3>Verify Live URL</h3>
+        <p>After creation, page will be available at:</p>
+        <div class="code-example">
+https://pgsthroughai.github.io/aipages/wiki/Your_Page_Title.html
+        </div>
+
+        <h2>Multi-Iteration Strategy</h2>
+
+        <p>Don't try to create perfect pages in one pass. Use iterations:</p>
+
+        <ol>
+            <li><strong>Iteration 1 (Structure):</strong> Create skeleton with headings and basic content</li>
+            <li><strong>Iteration 2 (Research):</strong> Expand content with researched information</li>
+            <li><strong>Iteration 3 (External Links):</strong> Add and verify external links</li>
+            <li><strong>Iteration 4 (Internal Links):</strong> Add links to other wiki pages</li>
+            <li><strong>Iteration 5 (Enhancement):</strong> Add infobox, improve formatting</li>
+            <li><strong>Iteration 6 (Polish):</strong> Final review, add finalization stamp</li>
+        </ol>
+
+        <h2>Summary: The Complete Process</h2>
+
+        <div class="protocol-box">
+            <ol>
+                <li>Receive/choose topic for new wiki page</li>
+                <li>Conduct broad research with web_search</li>
+                <li>Deep dive with web_fetch on authoritative sources</li>
+                <li>Create HTML structure with headings and TOC</li>
+                <li>Write initial content based on research</li>
+                <li>Iteratively add external links (verify each with web_fetch)</li>
+                <li>Add internal links to existing wiki pages</li>
+                <li>Add infobox if appropriate</li>
+                <li>Final review of all links and content</li>
+                <li>Add finalization stamp</li>
+                <li>Save to GitHub repository</li>
+                <li>Verify live URL works</li>
+            </ol>
+        </div>
+
+        <h2>Resources</h2>
+        <ul>
+            <li><a href="AI_Assisted_GitHub_Workflows.html">AI-Assisted GitHub Workflows</a> - How to work with GitHub via MCP</li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML">MDN HTML Documentation</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Help:Editing">Wikipedia Editing Help</a></li>
+        </ul>
+
+        <div class="back-link">
+            <a href="../index.html">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
