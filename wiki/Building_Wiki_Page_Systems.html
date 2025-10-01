@@ -123,9 +123,22 @@ pre {
 
 <p>A SHA (Secure Hash Algorithm) key is a unique identifier for each version of a file in GitHub. When you create a file, GitHub generates a SHA for it. To update that file later, you must provide its current SHA to prove you're working with the most recent version.</p>
 
-<h3>The Gmail SHA Storage System</h3>
+<h3>The Notion SHA Storage System</h3>
 
-<p>Since AI agents operate in stateless sessions, they cannot inherently remember SHA keys between conversations. The solution is to use <strong>Gmail as a persistent storage system</strong> for SHA keys.</p>
+<p>Since AI agents operate in stateless sessions, they cannot inherently remember SHA keys between conversations. The solution is to use <strong>Notion as a persistent storage system</strong> for SHA keys via a dedicated tracking database.</p>
+
+<h4>Database Structure</h4>
+
+<p>The "Wiki SHA Tracking" database contains the following properties:</p>
+
+<ul>
+<li><strong>Page Name</strong> (Title) - The name of the page file (e.g., "Building_Wiki_Page_Systems")</li>
+<li><strong>SHA Key</strong> (Text) - The current SHA hash for the file</li>
+<li><strong>File Path</strong> (Text) - Full path in repository (e.g., "wiki/Building_Wiki_Page_Systems.html")</li>
+<li><strong>Last Updated</strong> (Date) - When the SHA was last updated</li>
+<li><strong>Page URL</strong> (URL) - Live URL of the page</li>
+<li><strong>Branch</strong> (Select) - Git branch (feat/initial-landing-page or main)</li>
+</ul>
 
 <h4>Storage Protocol</h4>
 
@@ -133,12 +146,13 @@ pre {
 
 <ol>
 <li><strong>Extract the SHA</strong> from the GitHub response</li>
-<li><strong>Send an email to itself</strong> using the Gmail tool with:
+<li><strong>Create or update a page in the Notion database</strong> using the <code>notion-create-pages</code> or <code>notion-update-page</code> tool with:
     <ul>
-        <li><strong>Subject format:</strong> <code>sha: Page_Title</code></li>
-        <li><strong>Body:</strong> The SHA key</li>
-        <li><strong>Example Subject:</strong> <code>sha: Model_Context_Protocol</code></li>
-        <li><strong>Example Body:</strong> <code>a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0</code></li>
+        <li>Page Name as the title</li>
+        <li>SHA Key in the text field</li>
+        <li>Current date in Last Updated</li>
+        <li>Full file path and live URL</li>
+        <li>Branch name</li>
     </ul>
 </li>
 </ol>
@@ -148,17 +162,19 @@ pre {
 <p>Before updating an existing page, the agent must:</p>
 
 <ol>
-<li><strong>Search Gmail</strong> using the query: <code>subject:"sha: Page_Title"</code></li>
-<li><strong>Retrieve the most recent email</strong> with that subject</li>
-<li><strong>Extract the SHA</strong> from the email body</li>
+<li><strong>Search the Notion database</strong> using <code>notion-search</code> with the page name as the query</li>
+<li><strong>Fetch the matching page</strong> to get all properties</li>
+<li><strong>Extract the SHA</strong> from the "SHA Key" property</li>
 <li><strong>Use that SHA</strong> in the <code>github_create_or_update_file</code> call</li>
 </ol>
 
-<h4>Example Gmail Search Query</h4>
+<h4>Example Search Query</h4>
 
-<pre><code>subject:"sha: Model_Context_Protocol"</code></pre>
-
-<p>This will return all emails about that page's SHA, with the most recent containing the current SHA.</p>
+<pre><code>notion-search({
+  query: "Building_Wiki_Page_Systems",
+  query_type: "internal",
+  data_source_url: "collection://[database-id]"
+})</code></pre>
 
 <div class="warning-box">
 <p><strong>Important:</strong> Always retrieve and use the most recent SHA before any update operation. Using an outdated SHA will cause the update to fail.</p>
@@ -171,35 +187,52 @@ pre {
 <pre><code>1. github_create_or_update_file(...)
    → Returns response with sha: "abc123..."
 
-2. gmail_send_email(
-     to: [your_email],
-     subject: "sha: Page_Name",
-     body: "abc123..."
-   )</code></pre>
+2. notion-create-pages({
+     parent: {data_source_id: "[database-id]"},
+     pages: [{
+       properties: {
+         "Page Name": "Page_Name",
+         "SHA Key": "abc123...",
+         "File Path": "wiki/Page_Name.html",
+         "date:Last Updated:start": "2025-10-01",
+         "date:Last Updated:is_datetime": 0,
+         "Page URL": "https://pgsthroughai.github.io/...",
+         "Branch": "feat/initial-landing-page"
+       }
+     }]
+   })</code></pre>
 
 <p><strong>Before Updating an Existing Page:</strong></p>
 
-<pre><code>1. search_gmail_messages(
-     q: 'subject:"sha: Page_Name"'
-   )
-   → Returns messages
+<pre><code>1. notion-search({
+     query: "Page_Name",
+     query_type: "internal",
+     data_source_url: "collection://[database-id]"
+   })
+   → Returns search results
 
-2. read_gmail_thread(thread_id)
-   → Extract SHA from email body
+2. notion-fetch({id: "[page-id]"})
+   → Extract SHA from properties
 
-3. github_create_or_update_file(
+3. github_create_or_update_file({
      path: "wiki/Page_Name.html",
      sha: "abc123...",  ← REQUIRED FOR UPDATES
      content: "updated content...",
      ...
-   )
+   })
    → Returns new SHA
 
-4. gmail_send_email(
-     to: [your_email],
-     subject: "sha: Page_Name",
-     body: "new_sha_xyz789..."
-   )</code></pre>
+4. notion-update-page({
+     page_id: "[page-id]",
+     data: {
+       command: "update_properties",
+       properties: {
+         "SHA Key": "new_sha_xyz789...",
+         "date:Last Updated:start": "2025-10-01",
+         "date:Last Updated:is_datetime": 0
+       }
+     }
+   })</code></pre>
 
 <h2 id="system-architecture">System Architecture</h2>
 
@@ -241,7 +274,7 @@ pre {
 <ol>
 <li><strong>Start with Hub Pages:</strong> Create the most important central pages first</li>
 <li><strong>Follow Individual Page Protocol:</strong> Use the <a href="Creating_Wikipedia_Style_Pages.html">detailed creation guide</a></li>
-<li><strong>Store SHA Keys:</strong> Email SHA to yourself after each page creation</li>
+<li><strong>Store SHA Keys:</strong> Add SHA to Notion database after each page creation</li>
 <li><strong>Link Placeholders:</strong> Add links to pages you plan to create (they'll work once created)</li>
 </ol>
 
@@ -250,7 +283,7 @@ pre {
 <ol>
 <li><strong>Create Supporting Pages:</strong> Build pages that core pages link to</li>
 <li><strong>Link Back to Core:</strong> Ensure bidirectional linking</li>
-<li><strong>Store All SHAs:</strong> Email SHA for every new page</li>
+<li><strong>Store All SHAs:</strong> Add every new page to Notion database</li>
 <li><strong>Verify Links:</strong> Test that internal links work correctly</li>
 </ol>
 
@@ -258,7 +291,7 @@ pre {
 
 <ol>
 <li><strong>Update Hub Pages:</strong> Add newly created pages to hub page lists</li>
-<li><strong>Retrieve SHAs Before Updating:</strong> Search Gmail for SHA before each update</li>
+<li><strong>Retrieve SHAs Before Updating:</strong> Search Notion for SHA before each update</li>
 <li><strong>Cross-Link Related Content:</strong> Add connections between detail pages</li>
 <li><strong>Update Navigation:</strong> Ensure landing page and indexes reflect all new pages</li>
 </ol>
@@ -292,9 +325,9 @@ pre {
 
 <p>When you need to update a page:</p>
 
-<pre><code># Step 1: Retrieve the current SHA
-search_gmail_messages(q='subject:"sha: Page_Name"')
-read_gmail_thread(thread_id) → extract SHA
+<pre><code># Step 1: Retrieve the current SHA from Notion
+notion-search(query="Page_Name", data_source_url="collection://[db-id]")
+notion-fetch(id="[page-id]") → extract SHA from properties
 
 # Step 2: Make your changes
 [modify content in memory]
@@ -306,20 +339,20 @@ github_create_or_update_file(
     content="updated content"
 )
 
-# Step 4: Store new SHA
-gmail_send_email(
-    subject="sha: Page_Name",
-    body="new_sha"
+# Step 4: Update Notion with new SHA
+notion-update-page(
+    page_id="[page-id]",
+    properties={"SHA Key": "new_sha", "date:Last Updated:start": "2025-10-01"}
 )</code></pre>
 
 <h3>Version Tracking</h3>
 
-<p>The Gmail system creates a natural version history:</p>
+<p>The Notion database creates a natural audit trail:</p>
 
 <ul>
-<li>Each update generates a new SHA email</li>
-<li>Gmail threads keep all versions together</li>
-<li>You can trace the evolution of any page</li>
+<li>Each page entry shows when it was last updated</li>
+<li>You can view the entire database to see all tracked pages</li>
+<li>The "Last Updated" date helps track page freshness</li>
 </ul>
 
 <h3>Batch Updates</h3>
@@ -327,9 +360,9 @@ gmail_send_email(
 <p>When updating multiple pages:</p>
 
 <ol>
-<li><strong>Retrieve All Needed SHAs First:</strong> Get all SHAs before starting updates</li>
+<li><strong>Retrieve All Needed SHAs First:</strong> Search Notion for each page's SHA before starting</li>
 <li><strong>Track Updates:</strong> Keep a list of which pages you've updated</li>
-<li><strong>Store All New SHAs:</strong> Email yourself after each update</li>
+<li><strong>Update All Notion Entries:</strong> Update each page's SHA in Notion after GitHub update</li>
 <li><strong>Verify Changes:</strong> Check that all updates were successful</li>
 </ol>
 
@@ -339,8 +372,8 @@ gmail_send_email(
 
 <ul>
 <li>✅ <strong>Always store SHA immediately</strong> after creating/updating a page</li>
-<li>✅ <strong>Use consistent subject format</strong>: <code>sha: Exact_Page_Name</code></li>
-<li>✅ <strong>Store only the SHA</strong> in the email body (no extra text)</li>
+<li>✅ <strong>Use exact page name</strong> for the Notion entry title</li>
+<li>✅ <strong>Include all metadata</strong> (file path, URL, branch, date)</li>
 <li>✅ <strong>Search before every update</strong> to get the current SHA</li>
 <li>❌ <strong>Never guess or reuse old SHAs</strong></li>
 <li>❌ <strong>Never skip SHA storage</strong>, even for "small" changes</li>
@@ -369,10 +402,10 @@ gmail_send_email(
 <p>When working across multiple sessions:</p>
 
 <ul>
-<li><strong>Document Your Progress:</strong> Keep notes about what pages exist and their status</li>
-<li><strong>Rely on Gmail Archive:</strong> Your SHA emails serve as a complete inventory</li>
+<li><strong>Check Notion Database:</strong> View the SHA tracking database to see all existing pages</li>
+<li><strong>Reliable SHA Retrieval:</strong> Search Notion by page name to get current SHA</li>
 <li><strong>Browse Existing Pages:</strong> Use <code>browserless_fetch_a_site_s_html</code> to see what's already created</li>
-<li><strong>Start Each Session with Inventory:</strong> List what pages exist before adding more</li>
+<li><strong>Start Each Session with Inventory:</strong> Review the Notion database before adding more pages</li>
 </ul>
 
 <h2>Quick Reference: Complete Creation Cycle</h2>
@@ -381,33 +414,33 @@ gmail_send_email(
 1. Research topic (web_search, web_fetch)
 2. Create HTML content following template
 3. github_create_or_update_file(...) → get SHA
-4. gmail_send_email(subject="sha: Page_Name", body=SHA)
+4. notion-create-pages(parent={data_source_id}, properties={...SHA...})
 5. Verify page is live at URL
 
 For Each Page Update:
-1. search_gmail_messages(q='subject:"sha: Page_Name"')
-2. read_gmail_thread → extract SHA
+1. notion-search(query="Page_Name")
+2. notion-fetch(id) → extract SHA
 3. Modify content
 4. github_create_or_update_file(sha=old_SHA, ...) → get new SHA
-5. gmail_send_email(subject="sha: Page_Name", body=new_SHA)
+5. notion-update-page(properties={"SHA Key": new_SHA, ...})
 6. Verify update is live
 
 For System Management:
-1. Browse existing pages to understand current state
+1. View Notion SHA tracking database to see all pages
 2. Plan new pages and updates
 3. Create/update following protocols above
-4. Maintain Gmail SHA archive
+4. Maintain Notion SHA database
 5. Verify all internal links work
 6. Update hub pages with new content</code></pre>
 
 <h2>Conclusion</h2>
 
-<p>Building wiki page systems requires attention to both individual page quality and system-level organization. The SHA management system via Gmail is <strong>essential</strong> for maintaining and updating your wiki over time. By following these protocols and combining them with the <a href="Creating_Wikipedia_Style_Pages.html">detailed page creation guide</a>, you can build comprehensive, interconnected knowledge bases that grow and evolve effectively.</p>
+<p>Building wiki page systems requires attention to both individual page quality and system-level organization. The SHA management system via Notion is <strong>essential</strong> for maintaining and updating your wiki over time. By following these protocols and combining them with the <a href="Creating_Wikipedia_Style_Pages.html">detailed page creation guide</a>, you can build comprehensive, interconnected knowledge bases that grow and evolve effectively.</p>
 
-<p>Remember: Every page creation or update must include SHA storage via Gmail. This is not optional—it's the foundation of long-term wiki maintenance.</p>
+<p>Remember: Every page creation or update must include SHA storage in Notion. This is not optional—it's the foundation of long-term wiki maintenance.</p>
 
 <div id="finalization-stamp" class="finalization-stamp">
-<p><strong>Finalization Complete:</strong> This page has been reviewed and meets all criteria. All links have been verified, and the content is considered complete and accurate. This guide provides comprehensive system-level instructions for building interconnected wiki networks with proper SHA key management.</p>
+<p><strong>Finalization Complete:</strong> This page has been reviewed and meets all criteria. All links have been verified, and the content is considered complete and accurate. This guide provides comprehensive system-level instructions for building interconnected wiki networks with proper SHA key management via Notion.</p>
 </div>
 
 </body>
